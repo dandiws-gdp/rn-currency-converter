@@ -16,27 +16,20 @@ import colors from '../constants/colors'
 import { format } from 'date-fns'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScreenProps } from '../config/Navigation'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useConversionContext } from '../utils/ConversionContext'
 
 const screen = Dimensions.get('window')
 
 const Home = ({ navigation }: ScreenProps<'Home'>) => {
-  const [baseCurrency, setBaseCurrency] = useState('USD')
-  const [targetCurrency, setTargetCurrency] = useState('IDR')
-  const [conversionRate, setConversionRate] = useState(14000)
-  const [baseValue, setBaseValue] = useState<string>('1')
+  const { baseCurrency, targetCurrency, conversionRate, swapCurrencies } = useConversionContext()
 
+  const [baseValue, setBaseValue] = useState<string>('1')
   const targetValue = useMemo(
     () => (baseValue.trim() !== '' ? (parseFloat(baseValue) * conversionRate).toFixed(2) : ''),
     [baseValue, conversionRate]
   )
   const todayDate = format(new Date(), 'dd MMM yyyy')
-
-  const swapCurrencies = useCallback(() => {
-    setBaseCurrency(targetCurrency)
-    setTargetCurrency(baseCurrency)
-    setConversionRate((c) => 1 / c)
-  }, [baseCurrency, targetCurrency])
 
   return (
     <KeyboardAvoidingView
@@ -71,7 +64,7 @@ const Home = ({ navigation }: ScreenProps<'Home'>) => {
             navigation.push('CurrencyList', {
               title: 'Base currency',
               currency: baseCurrency,
-              onDidSelect: (selected) => setBaseCurrency(selected)
+              name: 'base-currency'
             })
           }
           text={baseCurrency}
@@ -83,7 +76,7 @@ const Home = ({ navigation }: ScreenProps<'Home'>) => {
             navigation.push('CurrencyList', {
               title: 'Target currency',
               currency: targetCurrency,
-              onDidSelect: (selected) => setTargetCurrency(selected)
+              name: 'target-currency'
             })
           }}
           text={targetCurrency}

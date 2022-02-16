@@ -6,9 +6,12 @@ import { ScreenProps } from '../config/Navigation'
 import colors from '../constants/colors'
 import currencies from '../data/currencies.json'
 import { Entypo } from '@expo/vector-icons'
+import { useConversionContext } from '../utils/ConversionContext'
 
 const CurrencyList = ({ navigation, route }: ScreenProps<'CurrencyList'>) => {
   const insets = useSafeAreaInsets()
+  const { setBaseCurrency, setTargetCurrency } = useConversionContext()
+
   return (
     <View style={{ backgroundColor: colors.white }}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
@@ -25,8 +28,12 @@ const CurrencyList = ({ navigation, route }: ScreenProps<'CurrencyList'>) => {
               )
             }
             onPress={() => {
-              if (route.params?.onDidSelect) {
-                route.params.onDidSelect(item)
+              if (route.params?.name === 'base-currency') {
+                setBaseCurrency(item)
+              }
+
+              if (route.params?.name === 'target-currency') {
+                setTargetCurrency(item)
               }
               navigation.goBack()
             }}

@@ -7,6 +7,7 @@ import Options from '../components/Options'
 import CurrencyList from '../screens/CurrencyList'
 import Home from '../screens/Home'
 import colors from '../constants/colors'
+import { ConversionContextProvider } from '../utils/ConversionContext'
 
 export type MainStackParamList = {
   Home: undefined
@@ -14,7 +15,7 @@ export type MainStackParamList = {
   CurrencyList: {
     title: string
     currency: string
-    onDidSelect?: (item: string) => void
+    name: string
   }
 }
 
@@ -54,7 +55,9 @@ const MainStackScreen = () => (
 
 const Navigation = () => (
   <NavigationContainer>
-    <MainStackScreen />
+    <ConversionContextProvider>
+      <MainStackScreen />
+    </ConversionContextProvider>
   </NavigationContainer>
 )
 
