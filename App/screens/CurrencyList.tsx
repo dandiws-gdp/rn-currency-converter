@@ -24,7 +24,12 @@ const CurrencyList = ({ navigation, route }: ScreenProps<'CurrencyList'>) => {
                 </View>
               )
             }
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              if (route.params?.onDidSelect) {
+                route.params.onDidSelect(item)
+              }
+              navigation.goBack()
+            }}
           />
         )}
         keyExtractor={(item) => item}

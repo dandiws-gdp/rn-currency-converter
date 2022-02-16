@@ -70,7 +70,8 @@ const Home = ({ navigation }: ScreenProps<'Home'>) => {
           onButtonPress={() =>
             navigation.push('CurrencyList', {
               title: 'Base currency',
-              currency: baseCurrency
+              currency: baseCurrency,
+              onDidSelect: (selected) => setBaseCurrency(selected)
             })
           }
           text={baseCurrency}
@@ -81,7 +82,8 @@ const Home = ({ navigation }: ScreenProps<'Home'>) => {
           onButtonPress={() => {
             navigation.push('CurrencyList', {
               title: 'Target currency',
-              currency: targetCurrency
+              currency: targetCurrency,
+              onDidSelect: (selected) => setTargetCurrency(selected)
             })
           }}
           text={targetCurrency}

@@ -14,6 +14,7 @@ export type MainStackParamList = {
   CurrencyList: {
     title: string
     currency: string
+    onDidSelect?: (item: string) => void
   }
 }
 
