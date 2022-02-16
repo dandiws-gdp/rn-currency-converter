@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
 })
 
 export interface RowItemProps {
-  rightIcon: React.ReactNode
   text: string
+  rightIcon?: React.ReactNode
   onPress?: () => void
 }
 

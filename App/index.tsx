@@ -1,5 +1,5 @@
-import Options from './components/Options'
+import Navigation from './config/Navigation'
 
-export default function App () {
-  return <Options />
+export default function App() {
+  return <Navigation />
 }

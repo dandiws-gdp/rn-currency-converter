@@ -1,6 +1,7 @@
-import { Alert, Linking, SafeAreaView, ScrollView } from 'react-native'
+import { Alert, Linking, SafeAreaView, ScrollView, StatusBar } from 'react-native'
 import { Entypo } from '@expo/vector-icons'
 import { RowItem, RowDivider } from './RowItem'
+import colors from '../constants/colors'
 
 const openUrl = (url: string) => {
   Linking.openURL(url).catch(() => {
@@ -11,6 +12,7 @@ const openUrl = (url: string) => {
 const Options = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
       <ScrollView>
         <RowItem text="Themes" rightIcon={<Entypo name="chevron-right" size={20} />} />
         <RowDivider />
@@ -21,8 +23,8 @@ const Options = () => {
         />
         <RowDivider />
         <RowItem
-          onPress={() => openUrl('https://dandiws.vercel.app')}
-          text="Dandi Wiratsangka's website"
+          onPress={() => openUrl('https://dandiws.vercel.app/blog')}
+          text="Blog"
           rightIcon={<Entypo name="export" size={20} />}
         />
       </ScrollView>
