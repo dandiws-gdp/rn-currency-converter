@@ -50,7 +50,7 @@ const MainStackScreen = () => (
       name="CurrencyList"
       component={CurrencyList}
       options={({ route, navigation }) => ({
-        title: route.params && `${route.params.title}: ${route.params.currency}`,
+        title: route.params?.title,
         presentation: 'modal',
         headerLeft: () => null,
         headerRight: () => (

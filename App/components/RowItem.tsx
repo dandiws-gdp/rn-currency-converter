@@ -21,15 +21,15 @@ const styles = StyleSheet.create({
 })
 
 export interface RowItemProps {
-  text: string
+  text?: string
   rightIcon?: React.ReactNode
   onPress?: () => void
 }
 
-export const RowItem: React.VFC<RowItemProps> = ({ rightIcon, text, onPress }) => {
+export const RowItem: React.FC<RowItemProps> = ({ rightIcon, text, onPress, children }) => {
   return (
     <TouchableOpacity style={styles.row} onPress={onPress}>
-      <Text style={styles.text}>{text}</Text>
+      {children || <Text style={styles.text}>{text}</Text>}
       {rightIcon}
     </TouchableOpacity>
   )
