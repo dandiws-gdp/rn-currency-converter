@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -6,15 +7,13 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native'
 import ConversionInput from '../components/ConversionInput'
 import Button from '../components/Button'
-import { Fontisto, Entypo } from '@expo/vector-icons'
+import { Fontisto } from '@expo/vector-icons'
 import colors from '../constants/colors'
 import { format } from 'date-fns'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScreenProps } from '../config/Navigation'
 import { useMemo, useState } from 'react'
 import { useConversionContext } from '../utils/ConversionContext'
@@ -22,27 +21,26 @@ import { useConversionContext } from '../utils/ConversionContext'
 const screen = Dimensions.get('window')
 
 const Home = ({ navigation }: ScreenProps<'Home'>) => {
-  const { baseCurrency, targetCurrency, conversionRate, swapCurrencies } = useConversionContext()
-
+  const { baseCurrency, targetCurrency, swapCurrencies, date, convert, conversionRate, loading } =
+    useConversionContext()
   const [baseValue, setBaseValue] = useState<string>('1')
-  const targetValue = useMemo(
-    () => (baseValue.trim() !== '' ? (parseFloat(baseValue) * conversionRate).toFixed(2) : ''),
-    [baseValue, conversionRate]
-  )
-  const todayDate = format(new Date(), 'dd MMM yyyy')
+
+  const targetValue = useMemo(() => {
+    const baseAmount = parseFloat(baseValue)
+    const result = !isNaN(baseAmount) && convert(baseAmount)
+    return result ? result.toFixed(2) : ''
+  }, [baseValue, convert])
+
+  const formattedDate = useMemo(() => {
+    return date ? format(new Date(date), 'dd MMM yyyy') : ''
+  }, [date])
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <StatusBar barStyle="light-content" backgroundColor={colors.darkblue} />
-
-      <SafeAreaView style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.push('Options')}>
-          <Entypo name="cog" size={30} color={colors.white} />
-        </TouchableOpacity>
-      </SafeAreaView>
+      <StatusBar barStyle="light-content" backgroundColor={colors.slate1} />
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Image
@@ -57,50 +55,54 @@ const Home = ({ navigation }: ScreenProps<'Home'>) => {
           />
         </View>
 
-        <Text style={styles.textHeader}>Curreny converter</Text>
-
-        <ConversionInput
-          onButtonPress={() =>
-            navigation.push('CurrencyList', {
-              title: 'Base currency',
-              currency: baseCurrency,
-              name: 'base-currency'
-            })
-          }
-          text={baseCurrency}
-          onChangeText={(text) => setBaseValue(text.trim())}
-          value={baseValue}
-        />
-        <ConversionInput
-          onButtonPress={() => {
-            navigation.push('CurrencyList', {
-              title: 'Target currency',
-              currency: targetCurrency,
-              name: 'target-currency'
-            })
-          }}
-          text={targetCurrency}
-          value={targetValue}
-          editable={false}
-        />
-
-        <Text style={styles.text}>
-          {`1 ${baseCurrency} = ${conversionRate} ${targetCurrency} as of ${todayDate}`}
-        </Text>
-
-        <Button
-          icon={
-            <Fontisto
-              style={styles.reverseIcon}
-              name="arrow-swap"
-              size={15}
-              color={colors.slate11}
+        {loading ? (
+          <ActivityIndicator color={colors.white} size={28} />
+        ) : (
+          <>
+            <ConversionInput
+              onButtonPress={() =>
+                navigation.push('CurrencyList', {
+                  title: 'Base currency',
+                  currency: baseCurrency,
+                  name: 'base-currency'
+                })
+              }
+              text={baseCurrency}
+              onChangeText={(text) => setBaseValue(text.trim())}
+              value={baseValue}
             />
-          }
-          onPress={swapCurrencies}
-        >
-          Reverse currencies
-        </Button>
+            <ConversionInput
+              onButtonPress={() => {
+                navigation.push('CurrencyList', {
+                  title: 'Target currency',
+                  currency: targetCurrency,
+                  name: 'target-currency'
+                })
+              }}
+              text={targetCurrency}
+              value={targetValue}
+              editable={false}
+            />
+
+            <Text style={styles.text}>
+              {`1 ${baseCurrency} = ${conversionRate} ${targetCurrency} as of ${formattedDate}`}
+            </Text>
+
+            <Button
+              icon={
+                <Fontisto
+                  style={styles.reverseIcon}
+                  name="arrow-swap"
+                  size={15}
+                  color={colors.slate11}
+                />
+              }
+              onPress={swapCurrencies}
+            >
+              Reverse currencies
+            </Button>
+          </>
+        )}
       </View>
     </KeyboardAvoidingView>
   )
@@ -113,13 +115,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.slate1,
     flex: 1
   },
+  header: {
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.slate1
+  },
   content: {
     flex: 1,
     justifyContent: 'center'
   },
   logoContainer: {
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 50,
+    marginTop: -1 * screen.width * 0.3
   },
   logoBackground: {
     width: screen.width * 0.3,
@@ -131,7 +142,7 @@ const styles = StyleSheet.create({
     height: screen.width * 0.15
   },
   textHeader: {
-    fontSize: 28,
+    fontSize: 17,
     textAlign: 'center',
     color: colors.white,
     fontWeight: '600',
@@ -148,10 +159,5 @@ const styles = StyleSheet.create({
         rotate: '90deg'
       }
     ]
-  },
-  header: {
-    alignItems: 'flex-end',
-    paddingHorizontal: 16,
-    paddingTop: 8
   }
 })

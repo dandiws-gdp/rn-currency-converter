@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native'
 import colors from '../constants/colors'
+import { Entypo } from '@expo/vector-icons'
 
 export interface ConversionInputProps extends TextInputProps {
   text: string
@@ -20,9 +21,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.slate5
   },
   button: {
-    width: 60,
+    width: 80,
     paddingVertical: 12,
-    backgroundColor: colors.slate7
+    backgroundColor: colors.slate7,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   buttonText: {
     color: colors.slate11,
@@ -54,6 +58,7 @@ const ConversionInput: React.VFC<ConversionInputProps> = ({ text, onButtonPress,
     <View style={containerStyles}>
       <TouchableOpacity onPress={onButtonPress} style={styles.button}>
         <Text style={styles.buttonText}>{text}</Text>
+        <Entypo name="triangle-down" color={colors.slate11} size={15} style={{ marginLeft: 5 }} />
       </TouchableOpacity>
       <TextInput style={inputStyles} keyboardType="numeric" {...props} />
     </View>

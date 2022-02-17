@@ -31,9 +31,19 @@ const MainStackScreen = () => (
     <MainStack.Screen
       name="Home"
       component={Home}
-      options={{
-        headerShown: false
-      }}
+      options={({ navigation }) => ({
+        headerStyle: {
+          backgroundColor: colors.slate1
+        },
+        headerTintColor: colors.white,
+        headerTitle: 'Currency Converter',
+        headerRight: () => (
+          <TouchableOpacity style={{ marginRight: 16 }} onPress={() => navigation.push('Options')}>
+            <Entypo name="cog" size={24} color={colors.white} />
+          </TouchableOpacity>
+        ),
+        headerShadowVisible: false
+      })}
     />
     <MainStack.Screen name="Options" component={Options} />
     <MainStack.Screen

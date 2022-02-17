@@ -1,15 +1,50 @@
-import { createContext, useCallback, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import api from './api'
+
+const DEFAULT_BASE_CURRENCY = 'USD'
+const DEFAULT_TARGET_CURRENCY = 'IDR'
 
 const useConversion = () => {
-  const [baseCurrency, setBaseCurrency] = useState('USD')
-  const [targetCurrency, setTargetCurrency] = useState('IDR')
-  const [conversionRate, setConversionRate] = useState(14000)
+  const [baseCurrency, _setBaseCurrency] = useState(DEFAULT_BASE_CURRENCY)
+  const [targetCurrency, setTargetCurrency] = useState(DEFAULT_TARGET_CURRENCY)
+  const [rates, setRates] = useState<Record<string, number>>()
+  const [date, setDate] = useState<string>()
+  const [loading, setLoading] = useState(true)
+
+  const conversionRate = useMemo(() => {
+    return rates && rates[targetCurrency]
+  }, [targetCurrency, rates])
+
+  const setBaseCurrency = useCallback((currency) => {
+    setLoading(true)
+    api
+      .latestRates(currency)
+      .then((json) => {
+        _setBaseCurrency(currency)
+        setRates(json.rates)
+        setDate(json.date)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    setBaseCurrency(DEFAULT_BASE_CURRENCY)
+  }, [])
 
   const swapCurrencies = useCallback(() => {
     setBaseCurrency(targetCurrency)
     setTargetCurrency(baseCurrency)
-    setConversionRate((c) => 1 / c)
   }, [baseCurrency, targetCurrency])
+
+  const convert = useCallback(
+    (amount: number) => (conversionRate ? amount * conversionRate : null),
+    [conversionRate]
+  )
 
   return {
     baseCurrency,
@@ -17,7 +52,11 @@ const useConversion = () => {
     setBaseCurrency,
     setTargetCurrency,
     swapCurrencies,
-    conversionRate
+    conversionRate,
+    convert,
+    rates,
+    date,
+    loading
   }
 }
 
