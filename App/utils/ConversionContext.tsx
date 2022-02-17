@@ -12,8 +12,11 @@ const useConversion = () => {
   const [loading, setLoading] = useState(true)
 
   const conversionRate = useMemo(() => {
+    if (targetCurrency === baseCurrency) {
+      return 1
+    }
     return rates && rates[targetCurrency]
-  }, [targetCurrency, rates])
+  }, [targetCurrency, baseCurrency, rates])
 
   const setBaseCurrency = useCallback((currency) => {
     setLoading(true)
